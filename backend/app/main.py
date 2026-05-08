@@ -3,10 +3,14 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import auth, documents, sadir, system, users, warid
+from app.models.database import Base, engine
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Railway Secretariat API starting...")
+    Base.metadata.create_all(bind=engine)
     yield
     print("Railway Secretariat API shutting down...")
 
@@ -24,7 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.get("/api/health")
-def health():
-    return {"status": "ok", "service": "Railway Secretariat API"}
+# Register routers
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(warid.router)
+app.include_router(sadir.router)
+app.include_router(documents.router)
+app.include_router(system.router)

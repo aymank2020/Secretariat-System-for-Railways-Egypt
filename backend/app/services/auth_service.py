@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
-from jose import JWTError, jwt
 import bcrypt
+from jose import jwt
 
 from app.models.user import UserModel
 
@@ -28,7 +28,11 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
 
 def verify_token(token: str) -> dict:
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    # JWT requires string sub; convert back to int for DB lookups
+    if "sub" in payload and isinstance(payload["sub"], str):
+        payload["sub"] = int(payload["sub"])
+    return payload
 
 
 def authenticate_user(db, username: str, password: str) -> UserModel | None:

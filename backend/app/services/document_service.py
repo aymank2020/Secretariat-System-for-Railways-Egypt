@@ -253,6 +253,26 @@ def get_deleted_records(db, document_type: str = None):
     return q.order_by(DeletedRecordModel.deleted_at.desc()).all()
 
 
+def _parse_datetime(val):
+    """Convert ISO string back to datetime if needed."""
+    if val is None:
+        return None
+    if isinstance(val, datetime.datetime):
+        return val
+    if isinstance(val, str):
+        for fmt in (
+            "%Y-%m-%dT%H:%M:%S.%f",
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%d %H:%M:%S.%f",
+            "%Y-%m-%d %H:%M:%S",
+        ):
+            try:
+                return datetime.datetime.strptime(val, fmt)
+            except ValueError:
+                continue
+    return val
+
+
 def restore_deleted_record(db, record_id: int) -> bool:
     rec = db.query(DeletedRecordModel).filter(DeletedRecordModel.id == record_id).first()
     if not rec:
@@ -267,8 +287,20 @@ def restore_deleted_record(db, record_id: int) -> bool:
     else:
         return False
 
+    # SQLite datetime columns only accept datetime objects (not strings)
+    DATE_FIELDS = {
+        "qaid_date", "letter_date", "chairman_incoming_date",
+        "chairman_return_date", "recipient1_delivery_date",
+        "recipient2_delivery_date", "recipient3_delivery_date",
+        "sent_to1_delivery_date", "sent_to2_delivery_date",
+        "sent_to3_delivery_date", "signature_date",
+        "created_at", "updated_at",
+    }
+
     for key, val in payload.items():
         if hasattr(obj, key) and key != "id":
+            if key in DATE_FIELDS:
+                val = _parse_datetime(val)
             setattr(obj, key, val)
 
     db.add(obj)
