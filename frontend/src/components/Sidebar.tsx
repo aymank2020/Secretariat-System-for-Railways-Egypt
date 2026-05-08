@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/sadir", label: "الصادر", icon: "📤" },
   { href: "/users", label: "المستخدمين", icon: "👥" },
   { href: "/deleted", label: "المحذوفات", icon: "🗑️" },
+  { href: "/statistics", label: "الإحصائيات", icon: "📊" },
   { href: "/settings", label: "الإعدادات", icon: "⚙️" },
 ];
 
