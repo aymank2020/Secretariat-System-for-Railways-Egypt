@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --railway-blue: #1a365d;
+  --railway-gold: #d4a843;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-noto), system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Dark mode overrides */
+.dark body,
+.dark .bg-white { background-color: #1a1a2e; }
+.dark .text-gray-600 { color: #a0aec0; }
+.dark .text-gray-500 { color: #8b95a5; }
+.dark .border-gray-200 { border-color: #2d3748; }
+
+/* Utility classes */
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6;
+}
+
+.btn-primary {
+  @apply bg-[#1a365d] hover:bg-[#2a4a77] text-white px-4 py-2 rounded-lg transition-colors font-medium;
+}
+
+.btn-gold {
+  @apply bg-[#d4a843] hover:bg-[#c49a3a] text-[#1a365d] px-4 py-2 rounded-lg transition-colors font-bold;
+}
