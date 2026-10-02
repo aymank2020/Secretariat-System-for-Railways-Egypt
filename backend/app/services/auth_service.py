@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta, timezone
+import os
 
 import bcrypt
 from jose import jwt
 
 from app.models.user import UserModel
 
-SECRET_KEY = "secretariat-railways-2026-secret-key"
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+if len(SECRET_KEY) < 32:
+    raise ValueError("SECRET_KEY must be configured with at least 32 characters")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 480
 

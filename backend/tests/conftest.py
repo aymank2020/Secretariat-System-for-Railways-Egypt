@@ -1,7 +1,11 @@
 import pytest
+import os
+os.environ.setdefault("SECRET_KEY", "isolated-test-signing-key-with-32-characters")
+os.environ["DATABASE_URL"] = "sqlite://"
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.main import app
 from app.models.database import Base, get_db
@@ -9,11 +13,12 @@ from app.services.auth_service import hash_password
 
 # ── In-memory SQLite for tests ──
 
-TEST_DATABASE_URL = "sqlite:///./test_secretariat.db"
+TEST_DATABASE_URL = "sqlite://"
 
 engine = create_engine(
     TEST_DATABASE_URL,
     connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
